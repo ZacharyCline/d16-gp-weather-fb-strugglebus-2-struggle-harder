@@ -1,3 +1,18 @@
+body {
+	background-image: url(img/clouds.gif);
+}
+
+#weather-wrapper {
+	width: 40%;
+	margin: 0 auto;
+	min-height: 400px;
+	background: white;
+	border: 5px solid black;
+	padding: 25px;
+}
+
+
+
 ul > li {
   display: inline;
   list-style-type: none;

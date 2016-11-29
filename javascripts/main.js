@@ -8,34 +8,51 @@ let db = require("./db-interaction"),
     templates = require("./dom-builder"),
     user = require("./user");
 
-function outputWeather (zipVal){
-    let currentUser = user.getUser();
 
-    db.getWeather(zipVal).then(function(weatherData){
-        console.log("got some data", weatherData);
-        var idArray = Object.keys(weatherData); 
-        $('#weather-output').append(
-        `Location: ${weatherData.name}<br>
-         Temperature: ${weatherData.main.temp}<br>
-         Conditions: ${weatherData.weather[0].description}<br>
-         Air Pressure: ${weatherData.main.pressure}<br>
-         Wind Speed : ${weatherData.wind.speed}<br>
-        `);
-    });    
+
+/* ------ VALIDATE ZIP & BUILD WEATHER  ------ */
+
+function runWeather(){
+  var zipCode = document.getElementById("zipCode").value;
+  var isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zipCode);
+
+  if (isValidZip){
+    console.log("Yeah, that's valid. Move along now.");
+    db.getWeather(zipCode)
+    .then((data) =>{
+      templates.buildWeather(data, zipCode);
+    });
+
+  } else {
+    window.alert("Woah there, we need a valid zip code.");
+  }
 }
 
-/* ----- EVENT LISTENERS ----- */
+
+
+
+
+/* ---------------------------- EVENT LISTENERS ---------------------------- */
 
 
 $('#submitButton').click(function() {
-  var zipVal = $('#zipInput').val(); 
-  var zipTest = /^\d{5}(-\d{4})?$/.test(zipVal);
+  var zipCode = $('#zipInput').val(); 
+  var zipTest = /^\d{5}(-\d{4})?$/.test(zipCode);
     if (zipTest) { 
-      outputWeather(zipVal);
+      console.log("Yeah, that's valid");
+     
+      db.getWeather(zipCode)
+        .then((data) => {
+          templates.buildWeather(data, zipCode);
+     
+        });
     }else {
       window.alert("Please enter a valid zip code."); 
     }
 }); 
+
+
+/*----- LOGIN & LOGOUT -----*/
 
 
 $("#auth-btn").click(function() {
@@ -58,5 +75,4 @@ $("#logout").click(function() {
   });
 });
 
-
-module.exports = outputWeather;
+module.exports = {runWeather};
